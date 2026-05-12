@@ -199,53 +199,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        total_cholesterol, hdl_cholesterol,
        smoking, diabetes, bp_treatment,
        cvd_risk_percent, cvd_category,
-       health_score, health_category)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+       health_score, health_category, source)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 ");
 
-// Count: 19 values
-// i=user_id, i=age, s=sex, d=height, d=weight,
-// d=bmi, s=bmi_cat, i=systolic, i=diastolic, s=bp_cat,
-// d=total_chol, d=hdl_chol, i=smoking, i=diabetes, i=bp_treated,
-// d=cvd_risk, s=cvd_cat, i=health_score, s=health_cat
-$types = "iisdddsiiisddiiiids";
+// ══ SAVE TO DB ══
+$source = 'self';
 
-// Convert to correct types
-$user_id_int    = (int)$user_id;
-$age_int        = (int)$age;
-$height_d       = (float)$height;
-$weight_d       = (float)$weight;
-$bmi_d          = (float)$bmi;
-$systolic_int   = (int)$systolic;
-$diastolic_int  = (int)$diastolic;
-$total_chol_d   = (float)$total_chol;
-$hdl_chol_d     = (float)$hdl_chol;
-$smoking_int    = (int)$smoking;
-$diabetes_int   = (int)$diabetes;
-$bp_treated_int = (int)$bp_treated;
-$cvd_risk_d     = (float)$cvd_risk;
-$health_int     = (int)$health_score;
+$save = $conn->prepare("
+    INSERT INTO health_records
+      (user_id, age, sex, height, weight, bmi, bmi_category,
+       systolic_bp, diastolic_bp, bp_category,
+       total_cholesterol, hdl_cholesterol,
+       smoking, diabetes, bp_treatment,
+       cvd_risk_percent, cvd_category,
+       health_score, health_category, source)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+");
 
-$save->bind_param($types,
-    $user_id_int,
-    $age_int,
-    $sex,
-    $height_d,
-    $weight_d,
-    $bmi_d,
-    $bmi_cat,
-    $systolic_int,
-    $diastolic_int,
-    $bp_cat,
-    $total_chol_d,
-    $hdl_chol_d,
-    $smoking_int,
-    $diabetes_int,
-    $bp_treated_int,
-    $cvd_risk_d,
-    $cvd_cat,
-    $health_int,
-    $health_cat
+$uid = (int)$user_id;
+$a   = (int)$age;
+$h   = (float)$height;
+$w   = (float)$weight;
+$b   = (float)$bmi;
+$sys = (int)$systolic;
+$dia = (int)$diastolic;
+$tc  = (float)$total_chol;
+$hdl = (float)$hdl_chol;
+$sm  = (int)$smoking;
+$db  = (int)$diabetes;
+$bpt = (int)$bp_treated;
+$cvd = (float)$cvd_risk;
+$hs  = (int)$health_score;
+
+$save->bind_param("iisdddsiiisddiiidsis",
+    $uid, $a, $sex, $h, $w, $b, $bmi_cat,
+    $sys, $dia, $bp_cat,
+    $tc, $hdl, $sm, $db, $bpt,
+    $cvd, $cvd_cat, $hs, $health_cat, $source
 );
 $save->execute();
 $save->close();
@@ -316,8 +307,8 @@ $save->close();
 
     <!-- Disclaimer -->
     <div class="alert alert-warning" style="margin-bottom:24px;">
-      ⚠ <strong>Medical Disclaimer:</strong> This tool is for educational purposes only and does not constitute medical advice. Results are based on validated scoring systems but should not replace professional medical consultation. Please consult a licensed physician for proper diagnosis and treatment.
-    </div>
+  ⚠ <strong>Medical Disclaimer:</strong> This tool is for educational purposes only. Results are based on <strong>self-reported data</strong> which may not be fully accurate. For a verified health assessment, please <strong>visit the clinic</strong> so the nurse can measure your actual values. Always consult a licensed physician for proper diagnosis.
+</div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
 

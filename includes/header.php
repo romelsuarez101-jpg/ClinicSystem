@@ -69,8 +69,11 @@ $lowCount = $conn->query("SELECT COUNT(*) AS c FROM medicines WHERE quantity <= 
     <?php endif; ?>
   </a>
   <a href="admin_students.php" class="nav-item <?= ($activePage==='students')?'active':'' ?>">
-    <span class="nav-icon">👥</span> Students
-  </a>
+  <span class="nav-icon">👥</span> Students
+</a>
+<a href="admin_health.php" class="nav-item <?= ($activePage==='health')?'active':'' ?>">
+  <span class="nav-icon">❤️</span> Health Records
+</a>
 </div>
 <div class="sidebar-section">
   <div class="sidebar-label">Reports</div>
